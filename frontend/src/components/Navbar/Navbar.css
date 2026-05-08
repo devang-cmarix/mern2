@@ -1,0 +1,185 @@
+/* ── Top bar ── */
+.topbar {
+  background: #000;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+  font-size: 14px;
+  position: relative;
+}
+
+.topbar .shop {
+  margin-left: 6px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.topbar .lang {
+  position: absolute;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* ── Main navbar ── */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 40px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  position: relative;
+  z-index: 100;
+}
+
+/* Logo */
+.logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+  text-decoration: none;
+}
+
+/* Nav links */
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 36px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #1a1a1a;
+  font-size: 15px;
+  font-weight: 400;
+  position: relative;
+  padding-bottom: 4px;
+}
+
+/* Underline animation */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #1a1a1a;
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+  width: 100%;
+}
+
+/* ── Right section ── */
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Search box */
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #f5f5f5;
+  padding: 8px 14px;
+  border-radius: 4px;
+  gap: 8px;
+  transition: box-shadow 0.2s;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 200px;
+  font-size: 14px;
+  color: #555;
+  font-family: inherit;
+}
+
+.search-icon {
+  font-size: 18px;
+  color: #555;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.search-box:focus-within,
+.search-box:hover {
+  box-shadow: 0 0 0 1.5px #1a1a1a;
+}
+
+/* Icon group */
+.iconDiv {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Icon wrapper */
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  position: relative;
+  color: #1a1a1a;
+  text-decoration: none;
+}
+
+.icon-btn:hover {
+  background: #f5f5f5;
+  color: #db4444;
+}
+
+.icon-btn:hover .nav-icon {
+  color: #db4444;
+}
+
+/* Icons */
+.nav-icon {
+  font-size: 20px;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Cart/wishlist badge */
+.cart {
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #db4444;
+  color: #fff;
+  font-size: 10px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  line-height: 1;
+}

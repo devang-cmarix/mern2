@@ -1,0 +1,255 @@
+/* ==============================
+   Admin Orders — Styling
+   ============================== */
+
+.admin-orders {
+  animation: fadeIn 0.3s ease;
+}
+
+/* ── Page Header ── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ── Orders Container ── */
+.orders-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+}
+
+/* ── Filters ── */
+.filters-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  font-size: 14px;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.filter-select:hover,
+.filter-select:focus {
+  border-color: #db4444;
+  outline: none;
+}
+
+/* ── Table ── */
+.orders-table {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 1.2fr 1.5fr 0.8fr 1fr 1.2fr 1.2fr 1fr;
+  padding: 16px 20px;
+  background: #f9f9f9;
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 600;
+  font-size: 13px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1.5fr 0.8fr 1fr 1.2fr 1.2fr 1fr;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f5f5f5;
+  transition: background 0.2s ease;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.table-row:hover {
+  background: #fafafa;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+/* Order ID */
+.order-id {
+  font-family: "Courier New", monospace;
+  background: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #666;
+}
+
+/* Items badge */
+.items-badge {
+  display: inline-block;
+  background: #f0f0f0;
+  color: #1a1a1a;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.col-amount {
+  font-weight: 600;
+  color: #db4444;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.success {
+  background: #f0fff4;
+  color: #22863a;
+}
+
+.status-badge.info {
+  background: #f0f8ff;
+  color: #0366d6;
+}
+
+.status-badge.warning {
+  background: #fffaf0;
+  color: #b8860b;
+}
+
+.status-badge.danger {
+  background: #fff5f5;
+  color: #cb2431;
+}
+
+.status-badge.secondary {
+  background: #f5f5f5;
+  color: #666;
+}
+
+/* ── Pagination ── */
+.pagination {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.page-btn {
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #1a1a1a;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.page-btn:hover {
+  border-color: #db4444;
+  color: #db4444;
+}
+
+.page-btn.active {
+  background: #db4444;
+  color: white;
+  border-color: #db4444;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 1.2fr 1.5fr 1fr 1.2fr 1fr;
+  }
+
+  .col-items {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .header-actions .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .filters-bar {
+    flex-direction: column;
+  }
+
+  .filter-select,
+  .search-box-admin {
+    width: 100%;
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 1.2fr 1.2fr 1.2fr 1fr;
+  }
+
+  .col-date {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr 1.2fr 1fr;
+  }
+
+  .col-customer {
+    display: none;
+  }
+
+  .order-id {
+    font-size: 11px;
+  }
+}

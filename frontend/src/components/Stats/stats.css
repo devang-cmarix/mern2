@@ -1,0 +1,80 @@
+.stats {
+  padding: 50px 40px;
+}
+
+/* Layout */
+.stats-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* Card */
+.stat-card {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 30px 20px;
+  text-align: center;
+  transition: 0.3s;
+  background: white;
+}
+
+/* Active (red one) */
+.stat-card:hover {
+  background: #db4444;
+  color: white;
+}
+.stat-card.icon-wrapper:hover{
+    background: #db4444;
+  color: white;
+}
+.icon-wrapper {
+  width: 70px;
+  height: 70px;
+  background: #e5e5e5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+}
+
+/* Inner icon */
+.icon {
+  width: 45px;
+  height: 45px;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+/* Active icon styles */
+.stat-card.active .icon-wrapper {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.stat-card.active .icon {
+  background: white;
+  color: black;
+}
+
+/* Text */
+.stat-card h3 {
+  font-size: 26px;
+  margin-bottom: 5px;
+}
+
+.stat-card p {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Active text */
+.stat-card.active p {
+  color: #f0f0f0;
+}

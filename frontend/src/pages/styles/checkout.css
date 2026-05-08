@@ -1,0 +1,369 @@
+/* ==============================
+   Checkout Page — pixel-perfect
+   ============================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.co-page {
+  padding: 28px 80px 80px;
+  font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
+  background: #fff;
+  color: #1a1a1a;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+}
+
+.breadcrumb a {
+  color: #888;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb a:hover { color: #1a1a1a; }
+.bc-sep { color: #bbb; }
+.bc-current { color: #1a1a1a; font-weight: 600; }
+
+/* ── Two-column layout ── */
+.co-layout {
+  display: grid;
+  grid-template-columns: 1fr 480px;
+  gap: 80px;
+  align-items: start;
+}
+
+/* ── LEFT: Billing ── */
+.co-billing {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.co-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.co-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.co-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.co-label {
+  font-size: 13.5px;
+  font-weight: 400;
+  color: #1a1a1a;
+}
+
+.req {
+  color: #db4444;
+  margin-left: 2px;
+}
+
+.co-input {
+  width: 100%;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 4px;
+  padding: 14px 16px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1a1a1a;
+  outline: none;
+  transition: box-shadow 0.2s, background 0.2s;
+}
+
+.co-input:focus {
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(219, 68, 68, 0.2);
+}
+
+/* Save info checkbox */
+.co-save-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #1a1a1a;
+  margin-top: 4px;
+}
+
+/* Custom checkbox */
+.co-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1.5px solid #db4444;
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.2s;
+}
+
+.co-checkbox:checked {
+  background: #db4444;
+  border-color: #db4444;
+}
+
+.co-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 6px;
+  height: 11px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+/* ── RIGHT: Summary ── */
+.co-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 72px; /* align with form start below title */
+}
+
+/* Order items */
+.co-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.co-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.co-item-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  background: #f5f5f5;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.co-item-name {
+  flex: 1;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.co-item-price {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+  white-space: nowrap;
+}
+
+/* Totals */
+.co-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.co-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.co-total-row--bold {
+  font-weight: 600;
+}
+
+.co-divider {
+  border: none;
+  border-top: 1px solid #e8e8e8;
+  margin: 0;
+}
+
+/* ── Payment options ── */
+.co-payments {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.co-payment-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  gap: 12px;
+}
+
+.co-radio-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* Custom radio */
+.co-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #888;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+
+.co-radio:checked {
+  border-color: #1a1a1a;
+}
+
+.co-radio:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #1a1a1a;
+}
+
+/* Payment logos */
+.co-payment-logos {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.co-payment-logos img {
+  height: 22px;
+  object-fit: contain;
+}
+
+/* ── Coupon row ── */
+.co-coupon-row {
+  display: flex;
+  gap: 12px;
+}
+
+.co-coupon-input {
+  flex: 1;
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+  padding: 13px 16px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1a1a1a;
+  outline: none;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.co-coupon-input::placeholder { color: #aaa; }
+
+.co-coupon-input:focus {
+  border-color: #db4444;
+  box-shadow: 0 0 0 2px rgba(219, 68, 68, 0.15);
+}
+
+.btn-apply {
+  background: #db4444;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 13px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-apply:hover {
+  background: #c03333;
+  transform: translateY(-1px);
+}
+
+/* ── Place Order ── */
+.btn-place-order {
+  background: #db4444;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 16px 40px;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-place-order:hover {
+  background: #c03333;
+  transform: translateY(-1px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  .co-page { padding: 24px 32px 60px; }
+
+  .co-layout {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .co-summary {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .co-page { padding: 16px 16px 48px; }
+
+  .co-title { font-size: 22px; }
+
+  .co-coupon-row { flex-direction: column; }
+
+  .btn-place-order { width: 100%; text-align: center; }
+}

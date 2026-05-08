@@ -1,0 +1,180 @@
+/* ================================
+   MusicBanner — pixel-perfect match
+   ================================ */
+
+.music-banner {
+  position: relative;
+  width: 100%;
+  max-width: 1170px;
+  margin: 0 auto;
+  min-height: 430px;
+  background: #0d0d0d;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+}
+
+/* ── Radial gradient: dark left, lighter on right where speaker is ── */
+.banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 100% at 75% 50%,
+    rgba(60, 60, 60, 0.55) 0%,
+    rgba(10, 10, 10, 0.0) 60%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── Speaker image — right side ── */
+.banner-image {
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 58%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  z-index: 0;
+}
+
+.banner-image img {
+  width: 100%;
+  max-width: 680px;
+  object-fit: contain;
+  /* Subtle drop shadow to blend into dark bg */
+  filter: drop-shadow(-20px 0px 40px rgba(0, 0, 0, 0.8));
+}
+
+/* ── Left content ── */
+.banner-content {
+  position: relative;
+  z-index: 2;
+  padding: 60px 0 60px 70px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 480px;
+}
+
+/* "Categories" label */
+.banner-category {
+  color: #00ff66;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+/* Main headline */
+.banner-title {
+  color: #ffffff;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+/* ── Countdown circles ── */
+.banner-timer {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.timer-circle {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.timer-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+.timer-label {
+  font-size: 9px;
+  font-weight: 500;
+  color: #555;
+  letter-spacing: 0.2px;
+  line-height: 1;
+}
+
+/* ── Buy Now button ── */
+.banner-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 170px;
+  padding: 16px 0;
+  background: #00ff66;
+  color: #0d0d0d;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.banner-btn:hover {
+  background: #00e05a;
+  transform: translateY(-2px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .banner-content {
+    padding: 48px 0 48px 40px;
+  }
+
+  .banner-title {
+    font-size: 34px;
+  }
+
+  .banner-image {
+    width: 52%;
+    right: -10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .music-banner {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .banner-image {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .banner-content {
+    padding: 36px 24px 24px;
+    max-width: 100%;
+  }
+
+  .banner-title {
+    font-size: 28px;
+  }
+}

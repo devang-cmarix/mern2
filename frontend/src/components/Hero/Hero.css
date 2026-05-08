@@ -1,0 +1,102 @@
+.hero {
+  display: flex;
+  gap: 20px;
+  padding: 20px 40px;
+}
+
+.hero-container {
+  display: flex;
+  gap: 20px;
+
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background: #fff;
+  padding: 20px 0;
+  border-right: 1px solid #eee;
+}
+
+.category {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.category:hover {
+  color: #db4444;
+}
+
+
+.banner {
+  flex: 1;
+  background: #000;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 40px 60px;
+  border-radius: 6px;
+
+  position: relative;
+  min-height: 300px;
+}
+
+.banner-content {
+  max-width: 400px;
+}
+
+.apple {
+  font-size: 14px;
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+
+.banner-content h1 {
+  font-size: 48px;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.shop-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.banner-img {
+  width: 400px;
+  object-fit: contain;
+} 
+
+/* Dots */
+.dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  gap: 8px;
+}
+
+.dots span {
+  width: 8px;
+  height: 8px;
+  background: #777;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dots span.active {
+  background: red; /* like your screenshot */
+}

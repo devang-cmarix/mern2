@@ -1,0 +1,297 @@
+/* ================================
+   NewArrival — pixel-perfect match
+   ================================ */
+
+.na-section {
+  padding: 40px 80px 60px;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.na-header {
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.na-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.na-bar {
+  display: inline-block;
+  width: 14px;
+  height: 34px;
+  background: #db4444;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.na-label-text {
+  color: #db4444;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.na-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+/* ── Grid layout ── */
+/*
+  Layout:
+  [  PS5 large  ] [ Women's top-right ]
+  [  PS5 large  ] [ Speakers | Perfume ]
+*/
+.na-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 16px;
+}
+
+/* ── Base card ── */
+.na-card {
+  position: relative;
+  background: #1a1a1a;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.na-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.3s ease;
+}
+
+.na-card:hover::after {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* ── PS5 — spans both rows on the left ── */
+.na-card--large {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  min-height: 530px;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* ── Women's — top right ── */
+.na-card--women {
+  grid-column: 2;
+  grid-row: 1;
+  min-height: 248px;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* ── Small bottom row — each takes half of column 2 ── */
+.na-card--small {
+  grid-column: auto;
+  grid-row: 2;
+  min-height: 248px;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* For small cards, make them side by side inside column 2 */
+.na-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 260px 260px;
+  gap: 16px;
+}
+
+.na-card--large {
+  grid-column: 1 / 3;
+  grid-row: 1 / 3;
+}
+
+.na-card--women {
+  grid-column: 3 / 5;
+  grid-row: 1;
+}
+
+.na-card--small:nth-child(3) {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.na-card--small:nth-child(4) {
+  grid-column: 4;
+  grid-row: 2;
+}
+
+/* ── Images ── */
+.na-img {
+  position: absolute;
+  object-fit: contain;
+}
+
+/* PS5 — centered, large */
+.na-img--ps5 {
+  width: 90%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  transition: transform 0.4s ease;
+}
+
+.na-card--large:hover .na-img--ps5 {
+  transform: translate(-50%, -52%) scale(1.03);
+}
+
+/* Women — right side, portrait */
+.na-img--women {
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* Speakers — centered */
+.na-img--speakers {
+  width: 75%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  transition: transform 0.4s ease;
+}
+
+.na-card--small:hover .na-img--speakers {
+  transform: translate(-50%, -58%) scale(1.04);
+}
+
+/* Perfume — centered */
+.na-img--perfume {
+  width: 65%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  transition: transform 0.4s ease;
+}
+
+.na-card--small:hover .na-img--perfume {
+  transform: translate(-50%, -58%) scale(1.04);
+}
+
+/* ── Info overlay — bottom left of each card ── */
+.na-info {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: 2;
+  max-width: 260px;
+}
+
+.na-info h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 6px;
+  line-height: 1.2;
+}
+
+.na-info p {
+  font-size: 13px;
+  color: #cccccc;
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+/* Small card info — slightly tighter */
+.na-info--small h3 {
+  font-size: 18px;
+}
+
+.na-info--small p {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+/* ── Shop Now link ── */
+.na-link {
+  display: inline-block;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1.5px solid #ffffff;
+  padding-bottom: 2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.na-link:hover {
+  color: #db4444;
+  border-color: #db4444;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .na-section {
+    padding: 32px 32px 48px;
+  }
+
+  .na-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 320px 200px 200px;
+  }
+
+  .na-card--large {
+    grid-column: 1 / 3;
+    grid-row: 1;
+  }
+
+  .na-card--women {
+    grid-column: 1 / 3;
+    grid-row: 2;
+  }
+
+  .na-card--small:nth-child(3) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .na-card--small:nth-child(4) {
+    grid-column: 2;
+    grid-row: 3;
+  }
+}
+
+@media (max-width: 560px) {
+  .na-section {
+    padding: 24px 16px 36px;
+  }
+
+  .na-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 220px);
+  }
+
+  .na-card--large,
+  .na-card--women,
+  .na-card--small:nth-child(3),
+  .na-card--small:nth-child(4) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .na-title {
+    font-size: 26px;
+  }
+}

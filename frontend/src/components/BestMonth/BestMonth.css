@@ -1,0 +1,319 @@
+/* ================================
+   FlashSales — pixel-perfect match
+   ================================ */
+
+.flash {
+  padding: 40px 40px 48px;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* ── HEADER ── */
+.flash-header {
+  display: flex;
+  align-items: flex-end;        /* arrows align to bottom of header */
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.flash-left-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* "Today's" label row */
+.today {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bar {
+  width: 14px;
+  height: 32px;
+  background: #db4444;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.today p {
+  color: #db4444;
+  font-weight: 700;
+  font-size: 15px;
+  margin: 0;
+}
+
+/* Title + timer on same row */
+.flash-title-row {
+  display: flex;
+  align-items: flex-end;       /* align timer numbers baseline with title */
+  gap: 48px;
+}
+
+.flash-title-row h2 {
+  font-size: 30px;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* ── TIMER ── */
+.flash-timer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.time-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.time-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #333;
+  letter-spacing: 0.3px;
+}
+
+.time-num {
+  font-size: 30px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+  margin: 0;
+}
+
+/* Colon: same structure as time-box, just colored red */
+.dots {
+  color: #db4444 !important;
+  flex-shrink: 0;
+}
+
+/* ── ARROWS ── */
+.flash-arrows {
+  display: flex;
+  gap: 10px;
+  align-self: flex-end;
+}
+
+.flash-arrows button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.flash-arrows button:hover {
+  background: #e8e8e8;
+  border-color: #bbb;
+}
+
+/* ── PRODUCT ROW ── */
+.flash-products {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 8px;
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.flash-products::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── CARD ── */
+.card {
+  min-width: 240px;
+  max-width: 240px;
+  background: #fff;
+  border-radius: 4px;
+  position: relative;
+  flex-shrink: 0;
+  border: 1px solid #f0f0f0;
+  overflow: hidden;
+}
+
+/* ── DISCOUNT BADGE ── */
+.badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #db4444;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+/* ── ICON BUTTONS (heart + eye) ── */
+.icons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 2;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  color: #333;
+  transition: background 0.2s, color 0.2s;
+}
+
+.icon-btn:hover {
+  background: #db4444;
+  color: #fff;
+}
+
+/* ── IMAGE BOX ── */
+.img-box {
+  position: relative;
+  height: 200px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.img-box img {
+  max-width: 85%;
+  max-height: 85%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .img-box img {
+  transform: scale(1.04);
+}
+
+/* Add To Cart overlay */
+.overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #1a1a1a;
+  color: #fff;
+  text-align: center;
+  padding: 11px;
+  font-size: 14px;
+  font-weight: 500;
+  transform: translateY(100%);
+  transition: transform 0.28s ease;
+  cursor: pointer;
+}
+
+.card:hover .overlay {
+  transform: translateY(0);
+}
+
+/* ── CARD BODY ── */
+.card-body {
+  padding: 12px 14px 14px;
+  background: #fff;
+}
+
+.card-body h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #1a1a1a;
+}
+
+/* ── PRICE ── */
+.price {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.new {
+  color: #db4444;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.old {
+  text-decoration: line-through;
+  color: #aaa;
+  font-size: 14px;
+}
+
+/* ── STARS ── */
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.review-count {
+  font-size: 13px;
+  color: #999;
+}
+
+/* ── VIEW ALL BUTTON ── */
+.view-all-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 36px;
+}
+
+.view-all-btn {
+  background: #db4444;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 14px 48px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.view-all-btn:hover {
+  background: #c03333;
+  transform: translateY(-1px);
+}
+
+/* ── DIVIDER LINE (optional bottom border) ── */
+.flash::after {
+  content: "";
+  display: block;
+  margin-top: 48px;
+  border-bottom: 1px solid #e8e8e8;
+}

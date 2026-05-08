@@ -1,0 +1,110 @@
+.signup-container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* LEFT SIDE */
+.signup-left {
+  flex: 1;
+  background: #dbeef3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signup-left img {
+  width: 100%;
+  max-width: 500px;
+}
+
+/* RIGHT SIDE */
+.signup-right {
+  flex: 1;
+  padding: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.signup-right h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+/* FORM */
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.signup-form input {
+  border: none;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+  outline: none;
+  font-size: 14px;
+}
+
+/* BUTTONS */
+.primary-btn {
+  background: #db4444;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+}
+
+.google-btn img {
+  width: 18px;
+}
+
+/* LOGIN TEXT */
+.login-text {
+  text-align: center;
+  font-size: 14px;
+}
+
+.login-text span {
+  color: #000;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.login-link {
+  text-decoration:underline;
+  color: #000;
+  font-weight: 500;
+}
+
+.forgot-text{
+  text-align: right;
+  font-size: 14px;
+  color: #ff0000;
+}
+.forgot-link{
+  text-decoration:none;
+  color: #ff0000;
+  font-weight: 500;
+
+}

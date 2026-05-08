@@ -1,0 +1,94 @@
+.footer {
+  background: #000;
+  color: #fff;
+  padding: 50px 60px 20px;
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 40px;
+}
+
+/* Columns */
+.footer-col h2.logo {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.footer-col h4 {
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.footer-col p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* Subscribe */
+.subscribe-box {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #555;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.subscribe-box input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  flex: 1;
+}
+
+/* App section */
+.app-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+/* QR */
+.qr img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+/* RIGHT SIDE */
+.store-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* STORE IMAGES */
+.store-img {
+  width: 150px;
+  height: auto;
+  display: block;
+}
+
+
+/* Social icons */
+.socials {
+  margin-top: 15px;
+  display: flex;
+  gap: 15px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Bottom */
+.footer-bottom {
+  border-top: 1px solid #222;
+  margin-top: 30px;
+  padding-top: 15px;
+  text-align: center;
+  font-size: 13px;
+  color: #aaa;
+}
