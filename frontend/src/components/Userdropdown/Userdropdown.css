@@ -35,7 +35,7 @@
   color: #fff;
 }
 
-/* ── Dropdown panel: fully solid dark purple-to-dark gradient ── */
+/* ── Dropdown panel ── */
 .ud-dropdown {
   position: absolute;
   top: calc(100% + 10px);
@@ -45,7 +45,6 @@
   overflow: hidden;
   z-index: 9999;
 
-  /* Fully opaque — matches screenshot exactly */
   background: linear-gradient(
     170deg,
     #3d2160 0%,
@@ -72,7 +71,14 @@
   margin: 0;
 }
 
-/* ── Item ── */
+/* ── Divider before logout ── */
+.ud-list li:last-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+/* ── Shared item styles (both Link and button) ── */
 .ud-item {
   display: flex;
   align-items: center;
@@ -85,6 +91,8 @@
   font-weight: 400;
   transition: background 0.15s, color 0.15s;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Left accent bar on hover */
@@ -123,4 +131,58 @@
 
 .ud-item-label {
   line-height: 1;
+}
+
+/* ── Logout button reset — inherits all ud-item styles ── */
+.ud-item--logout {
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ── Logout specific: red accent instead of white ── */
+.ud-item--logout .ud-item-icon {
+  color: #e57373;
+}
+
+.ud-item--logout .ud-item-label {
+  color: #e57373;
+}
+
+.ud-item--logout:hover {
+  background: rgba(219, 68, 68, 0.12);
+  color: #ff6b6b;
+}
+
+.ud-item--logout:hover .ud-item-icon {
+  color: #ff6b6b;
+}
+
+.ud-item--logout:hover .ud-item-label {
+  color: #ff6b6b;
+}
+
+/* Logout accent bar is always red (same as others but always visible hint) */
+.ud-item--logout::before {
+  background: #db4444;
+}
+
+.ud-item--logout:hover::before {
+  opacity: 1;
+}
+
+/* ── Focus styles for accessibility ── */
+.ud-trigger:focus-visible {
+  outline: 2px solid #db4444;
+  outline-offset: 2px;
+}
+
+.ud-item:focus-visible {
+  outline: 2px solid rgba(219, 68, 68, 0.6);
+  outline-offset: -2px;
+  background: rgba(255, 255, 255, 0.09);
 }

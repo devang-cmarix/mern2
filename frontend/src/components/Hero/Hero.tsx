@@ -1,6 +1,6 @@
 import "./Hero.css";
 import { FiChevronRight } from "react-icons/fi";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 
 
@@ -36,18 +36,7 @@ const slides = [
   
 const Hero = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-const scrollRef = useRef<HTMLDivElement>(null);
-const handleDotClick = (index: number) => {
-  setCurrentIndex(index);
 
-  if (scrollRef.current) {
-    const cardWidth = 380; // adjust based on your card size
-    scrollRef.current.scrollTo({
-      left: index * cardWidth,
-      behavior: "smooth",
-    });
-  }
-};
   return (
     <section className="hero">
   <div className="hero-container">

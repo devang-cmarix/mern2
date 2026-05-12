@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import "./BestMonth.css";
-import { FiHeart, FiEye, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiHeart, FiEye } from "react-icons/fi";
 
 type Product = {
   id: number;

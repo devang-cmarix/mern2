@@ -131,6 +131,12 @@
   gap: 28px;
 }
 
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
 .form-title {
   font-size: 20px;
   font-weight: 600;
@@ -178,6 +184,33 @@
 .form-input:focus {
   background: #fff;
   box-shadow: 0 0 0 2px rgba(219, 68, 68, 0.22);
+}
+
+.account-message {
+  padding: 24px;
+  color: #666;
+  background: #f8f8f8;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.account-alert {
+  padding: 12px 14px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.account-alert.error {
+  background: #fff1f1;
+  color: #b42318;
+  border: 1px solid #ffd1d1;
+}
+
+.account-alert.success {
+  background: #f0fff4;
+  color: #16703c;
+  border: 1px solid #c7f0d8;
 }
 
 /* Password section stacks 3 full-width inputs */
@@ -240,6 +273,13 @@
 
 .btn-save:active {
   transform: translateY(0);
+}
+
+.btn-save:disabled,
+.btn-cancel:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* ── Responsive ── */

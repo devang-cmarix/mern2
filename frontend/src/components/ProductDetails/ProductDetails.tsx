@@ -1,36 +1,113 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { productAPI, cartAPI, wishlistAPI } from "../../services/api";
+import { useCartWishlist } from "../../context/CartWishlistContext";
+import * as Types from "../../types";
 import "./detsils.css";
 
-const images = [
-  "/images/detail5.jpg",
-  "/images/detail1.jpg",
-  "/images/detail2.jpg",
-  "/images/detail3.jpg",
-  "/images/detail4.jpg",
-];
+interface ProductDetailProps {
+  productId?: string;
+}
 
-const colours = ["#b0c4de", "#e07070"];
-const sizes = ["XS", "S", "M", "L", "XL"];
-
-const ProductDetail = () => {
+const ProductDetail = ({ productId }: ProductDetailProps) => {
+  const navigate = useNavigate();
+  const { refreshCounts } = useCartWishlist();
+  const [product, setProduct] = useState<Types.Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [activeImg, setActiveImg] = useState(0);
   const [activeColour, setActiveColour] = useState(0);
   const [activeSize, setActiveSize] = useState("M");
   const [qty, setQty] = useState(2);
   const [wishlisted, setWishlisted] = useState(false);
+  const [cartLoading, setCartLoading] = useState(false);
 
-  const price = 192.0;
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!productId) {
+        setError("Product ID not provided");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await productAPI.getProductById(productId);
+        if (response.success) {
+          setProduct(response.data);
+          setError("");
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch product");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [productId]);
+
+  const handleAddToCart = async () => {
+    if (!product?._id) return;
+
+    setCartLoading(true);
+    try {
+      await cartAPI.addToCart(product._id, qty);
+      await refreshCounts();
+      // Optionally navigate to cart or show success message
+    } catch (err) {
+      console.error("Failed to add to cart:", err);
+    } finally {
+      setCartLoading(false);
+    }
+  };
+
+  const handleAddToWishlist = async () => {
+    if (!product?._id) return;
+
+    try {
+      await wishlistAPI.addToWishlist(product._id);
+      setWishlisted(true);
+      await refreshCounts();
+    } catch (err) {
+      console.error("Failed to add to wishlist:", err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="pd-page">
+        <div style={{ textAlign: "center", padding: "40px" }}>Loading product...</div>
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="pd-page">
+        <div style={{ textAlign: "center", padding: "40px", color: "#db4444" }}>
+          {error || "Product not found"}
+        </div>
+      </div>
+    );
+  }
+
+  const images = product.images || ["/images/placeholder.jpg"];
+  const colours = product.colors || [];
+  const sizes = product.sizes || [];
+
+  const price = product.discountPrice || product.price;
 
   return (
     <div className="pd-page">
 
       {/* ── Breadcrumb ── */}
       <nav className="breadcrumb">
-        <a href="#">Account</a>
+        <a href="#" onClick={() => navigate("/")}>Home</a>
         <span className="bc-sep">/</span>
-        <a href="#">Gaming</a>
+        <a href="#" onClick={() => navigate("/products")}>Products</a>
         <span className="bc-sep">/</span>
-        <span className="bc-current">Havic HV G-92 Gamepad</span>
+        <span className="bc-current">{product.name}</span>
       </nav>
 
       {/* ── Main layout ── */}
@@ -57,23 +134,23 @@ const ProductDetail = () => {
         {/* ── Product info ── */}
         <div className="pd-info">
 
-          <h1 className="pd-title">Havic HV G-92 Gamepad</h1>
+          <h1 className="pd-title">{product.name}</h1>
 
           {/* Rating */}
           <div className="pd-rating">
             <div className="pd-stars">
               {[1, 2, 3, 4, 5].map((s) => (
                 <svg key={s} width="16" height="16" viewBox="0 0 24 24"
-                  fill={s <= 4 ? "#FFAD33" : "none"}
-                  stroke={s <= 4 ? "#FFAD33" : "#ccc"}
+                  fill={s <= (product.rating || 0) ? "#FFAD33" : "none"}
+                  stroke={s <= (product.rating || 0) ? "#FFAD33" : "#ccc"}
                   strokeWidth="1.5">
                   <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
                 </svg>
               ))}
             </div>
-            <span className="pd-reviews">(150 Reviews)</span>
+            <span className="pd-reviews">({product.reviews || 0} Reviews)</span>
             <span className="pd-divider">|</span>
-            <span className="pd-stock">In Stock</span>
+            <span className="pd-stock">{product.stock > 0 ? "In Stock" : "Out of Stock"}</span>
           </div>
 
           {/* Price */}
@@ -81,28 +158,28 @@ const ProductDetail = () => {
 
           {/* Description */}
           <p className="pd-desc">
-            PlayStation 5 Controller Skin High quality vinyl with air channel
-            adhesive for easy bubble free install &amp; mess free removal
-            Pressure sensitive.
+            {product.description || "No description available."}
           </p>
 
           <hr className="pd-hr" />
 
           {/* Colours */}
-          <div className="pd-option-row">
-            <span className="pd-option-label">Colours:</span>
-            <div className="pd-colours">
-              {colours.map((c, i) => (
-                <button
-                  key={i}
-                  className={`colour-dot ${i === activeColour ? "colour-dot--active" : ""}`}
-                  style={{ background: c }}
-                  onClick={() => setActiveColour(i)}
-                  aria-label={`Colour ${i + 1}`}
-                />
-              ))}
+          {colours.length > 0 && (
+            <div className="pd-option-row">
+              <span className="pd-option-label">Colours:</span>
+              <div className="pd-colours">
+                {colours.map((c, i) => (
+                  <button
+                    key={i}
+                    className={`size-btn ${i === activeColour ? "size-btn--active" : ""}`}
+                    onClick={() => setActiveColour(i)}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Size */}
           <div className="pd-option-row">
@@ -144,11 +221,17 @@ const ProductDetail = () => {
               </button>
             </div>
 
-            <button className="btn-buy">Buy Now</button>
+            <button 
+              className="btn-buy" 
+              onClick={handleAddToCart}
+              disabled={cartLoading}
+            >
+              {cartLoading ? "Adding..." : "Buy Now"}
+            </button>
 
             <button
               className={`btn-wish ${wishlisted ? "btn-wish--active" : ""}`}
-              onClick={() => setWishlisted((w) => !w)}
+              onClick={handleAddToWishlist}
               aria-label="Wishlist"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill={wishlisted ? "#db4444" : "none"}

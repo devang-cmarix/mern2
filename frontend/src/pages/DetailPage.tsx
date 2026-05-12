@@ -1,7 +1,8 @@
+import { useParams } from "react-router-dom";
 import ProductDetail from "../components/ProductDetails";
 
 export default function DetailPage() {
-  return (
-<ProductDetail/>
-  );
+  const { id } = useParams<{ id: string }>();
+
+  return <ProductDetail productId={id} />;
 }

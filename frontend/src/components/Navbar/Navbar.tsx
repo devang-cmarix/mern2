@@ -1,10 +1,14 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { FiSearch, FiHeart, FiShoppingCart } from "react-icons/fi";
 import "./Navbar.css";
-import {Link} from "react-router-dom";
 import UserDropdown from "../Userdropdown/Userdropdown";
+import { useAuth } from "./AuthContext";
+import { useCartWishlist } from "../../context/CartWishlistContext";
 
 const Navbar = () => {
+  const { isLoggedIn } = useAuth();
+  const { cartCount, wishlistCount } = useCartWishlist();
+
   return (
     <>
       {/* Top Bar */}
@@ -16,11 +20,11 @@ const Navbar = () => {
         <div className="lang">English ▾</div>
       </div>
 
-      {/* ── Main Navbar ── */}
+      {/* Main Navbar */}
       <nav className="navbar">
         {/* Logo */}
         <Link to="/" className="logo">Exclusive</Link>
- 
+
         {/* Nav links */}
         <ul className="nav-links">
           <li>
@@ -39,12 +43,21 @@ const Navbar = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/signup" className={({ isActive }) => isActive ? "active" : ""}>
-              Sign Up
+            <NavLink to="/products" className={({ isActive }) => isActive ? "active" : ""}>
+              Products
             </NavLink>
           </li>
+
+          {/* Show Sign Up only when NOT logged in */}
+          {!isLoggedIn && (
+            <li>
+              <NavLink to="/signup" className={({ isActive }) => isActive ? "active" : ""}>
+                Sign Up
+              </NavLink>
+            </li>
+          )}
         </ul>
- 
+
         {/* Right section */}
         <div className="right-section">
           {/* Search */}
@@ -52,27 +65,28 @@ const Navbar = () => {
             <input placeholder="What are you looking for?" />
             <FiSearch className="search-icon" />
           </div>
- 
-          {/* Icons */}
-          <div className="iconDiv">
-            {/* Wishlist */}
-            <Link to="/wishlist" className="icon-btn cart">
-              <span className="badge">2</span>
-              <FiHeart className="nav-icon" />
-            </Link>
- 
-            {/* Cart */}
-            <Link to="/cart" className="icon-btn cart">
-              <span className="badge">2</span>
-              <FiShoppingCart className="nav-icon" />
-            </Link>
- 
-            {/* User dropdown */}
-            <UserDropdown />
-          </div>
+
+          {/* Show icons only when logged in */}
+          {isLoggedIn && (
+            <div className="iconDiv">
+              {/* Wishlist */}
+              <Link to="/wishlist" className="icon-btn cart">
+                <span className="badge">{wishlistCount}</span>
+                <FiHeart className="nav-icon" />
+              </Link>
+
+              {/* Cart */}
+              <Link to="/cart" className="icon-btn cart">
+                <span className="badge">{cartCount}</span>
+                <FiShoppingCart className="nav-icon" />
+              </Link>
+
+              {/* User dropdown */}
+              <UserDropdown />
+            </div>
+          )}
         </div>
       </nav>
-
     </>
   );
 };

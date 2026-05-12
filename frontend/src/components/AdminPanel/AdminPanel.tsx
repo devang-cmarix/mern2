@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FiMenu, FiX, FiHome, FiPackage, FiUsers, FiBarChart2, FiSettings, FiLogOut } from "react-icons/fi";
+import { useAdminAuth } from "../../context/AdminAuthContext";
 import "./AdminPanel.css";
 
 interface AdminPanelProps {
@@ -9,6 +10,13 @@ interface AdminPanelProps {
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { logoutAdmin } = useAdminAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logoutAdmin();
+    navigate("/admin-login");
+  };
 
   return (
     <div className="admin-container">
@@ -67,7 +75,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ children }) => {
         </nav>
 
         <div className="admin-footer">
-          <button className="logout-btn">
+          <button className="logout-btn" onClick={handleLogout}>
             <FiLogOut className="nav-icon" />
             <span className={`nav-label ${!sidebarOpen ? "hidden" : ""}`}>Logout</span>
           </button>

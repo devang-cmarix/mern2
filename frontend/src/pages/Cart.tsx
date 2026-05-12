@@ -1,38 +1,75 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./styles/cart.css";
-
-type CartItem = {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-};
-
-const initialItems: CartItem[] = [
-  { id: 1, name: "LCD Monitor", price: 650, image: "/images/FlashSale3.jpg", quantity: 1 },
-  { id: 2, name: "H1 Gamepad", price: 550, image: "/images/FlashSale1.jpg", quantity: 2 },
-];
+import { cartAPI } from "../services/api";
+import { useCartWishlist } from "../context/CartWishlistContext";
+import * as Types from "../types";
 
 const Cart = () => {
-  const [items, setItems] = useState<CartItem[]>(initialItems);
+  const [cart, setCart] = useState<Types.Cart | null>(null);
+  const { refreshCounts } = useCartWishlist();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [coupon, setCoupon] = useState("");
 
-  const updateQty = (id: number, delta: number) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
-    );
+  const productIdFromItem = (item: Types.CartItem) =>
+    typeof item.productId === "string" ? item.productId : item.productId._id || "";
+
+  const loadCart = async () => {
+    try {
+      setLoading(true);
+      const response = await cartAPI.getCart();
+      if (response.success) {
+        setCart(response.data);
+        setError("");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load cart");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const removeItem = (id: number) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  useEffect(() => {
+    loadCart();
+  }, []);
+
+  const updateQty = async (item: Types.CartItem, delta: number) => {
+    const productId = productIdFromItem(item);
+    const quantity = Math.max(1, item.quantity + delta);
+
+    try {
+      const response = await cartAPI.updateCartItem(productId, quantity);
+      if (response.success) {
+        setCart(response.data);
+        setError("");
+        await refreshCounts();
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not update quantity");
+    }
   };
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const removeItem = async (item: Types.CartItem) => {
+    const productId = productIdFromItem(item);
+
+    try {
+      const response = await cartAPI.removeFromCart(productId);
+      if (response.success) {
+        setCart(response.data);
+        setError("");
+        await refreshCounts();
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not remove item");
+    }
+  };
+
+  const subtotal = cart?.total ??
+    cart?.items.reduce((sum, item) => {
+      const product = typeof item.productId === "string" ? null : item.productId;
+      const price = product?.price ?? 0;
+      return sum + price * item.quantity;
+    }, 0) ?? 0;
 
   return (
     <div className="cart-page">
@@ -44,111 +81,126 @@ const Cart = () => {
         <span className="bc-current">Cart</span>
       </nav>
 
-      {/* ── Cart table ── */}
-      <div className="cart-table">
+      {error && <div style={{ color: "#db4444", marginBottom: "20px" }}>{error}</div>}
 
-        {/* Header */}
-        <div className="cart-header">
-          <span>Product</span>
-          <span>Price</span>
-          <span>Quantity</span>
-          <span>Subtotal</span>
+      {loading ? (
+        <div style={{ padding: "40px", textAlign: "center", color: "#666" }}>
+          Loading your cart...
         </div>
-
-        {/* Rows */}
-        {items.map((item) => (
-          <div className="cart-row" key={item.id}>
-
-            {/* Product */}
-            <div className="cart-product">
-              <button
-                className="remove-btn"
-                onClick={() => removeItem(item.id)}
-                aria-label="Remove item"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="11" fill="#db4444" />
-                  <path d="M8 8l8 8M16 8l-8 8" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </button>
-              <img src={item.image} alt={item.name} className="cart-img" />
-              <span className="cart-name">{item.name}</span>
+      ) : !cart || cart.items.length === 0 ? (
+        <div className="cart-table">
+          <div className="cart-header">
+            <span>Product</span>
+            <span>Price</span>
+            <span>Quantity</span>
+            <span>Subtotal</span>
+          </div>
+          <div className="cart-row" style={{ justifyContent: "center", padding: "40px" }}>
+            <span>Your cart is empty.</span>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="cart-table">
+            <div className="cart-header">
+              <span>Product</span>
+              <span>Price</span>
+              <span>Quantity</span>
+              <span>Subtotal</span>
             </div>
 
-            {/* Price */}
-            <div className="cart-price">${item.price}</div>
+            {cart.items.map((item) => {
+              const product = typeof item.productId === "string" ? null : item.productId;
+              const itemKey = product?._id || String(item.productId);
+              const price = product?.price ?? 0;
+              const image = product?.images?.[0] || "/images/FlashSale1.jpg";
+              const name = product?.name || "Product";
 
-            {/* Quantity spinner */}
-            <div className="cart-qty">
-              <div className="qty-box">
-                <span className="qty-value">{item.quantity.toString().padStart(2, "0")}</span>
-                <div className="qty-arrows">
-                  <button onClick={() => updateQty(item.id, 1)} aria-label="Increase">
-                    <svg width="10" height="7" viewBox="0 0 10 7" fill="none">
-                      <path d="M1 6l4-4 4 4" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
-                  <button onClick={() => updateQty(item.id, -1)} aria-label="Decrease">
-                    <svg width="10" height="7" viewBox="0 0 10 7" fill="none">
-                      <path d="M1 1l4 4 4-4" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
+              return (
+                <div className="cart-row" key={itemKey}>
+                  <div className="cart-product">
+                    <button
+                      className="remove-btn"
+                      onClick={() => removeItem(item)}
+                      aria-label="Remove item"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="11" fill="#db4444" />
+                        <path d="M8 8l8 8M16 8l-8 8" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    </button>
+                    <img src={image} alt={name} className="cart-img" />
+                    <span className="cart-name">{name}</span>
+                  </div>
+
+                  <div className="cart-price">${price.toFixed(2)}</div>
+
+                  <div className="cart-qty">
+                    <div className="qty-box">
+                      <span className="qty-value">{item.quantity.toString().padStart(2, "0")}</span>
+                      <div className="qty-arrows">
+                        <button onClick={() => updateQty(item, 1)} aria-label="Increase">
+                          <svg width="10" height="7" viewBox="0 0 10 7" fill="none">
+                            <path d="M1 6l4-4 4 4" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </button>
+                        <button onClick={() => updateQty(item, -1)} aria-label="Decrease">
+                          <svg width="10" height="7" viewBox="0 0 10 7" fill="none">
+                            <path d="M1 1l4 4 4-4" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="cart-subtotal">${(price * item.quantity).toFixed(2)}</div>
                 </div>
-              </div>
+              );
+            })}
+          </div>
+
+          <div className="cart-actions">
+            <a href="/shop" className="btn-outline">Return To Shop</a>
+            <button className="btn-outline" onClick={loadCart}>Refresh Cart</button>
+          </div>
+
+          <div className="cart-bottom">
+            <div className="coupon-wrap">
+              <input
+                className="coupon-input"
+                type="text"
+                placeholder="Coupon Code"
+                value={coupon}
+                onChange={(e) => setCoupon(e.target.value)}
+              />
+              <button className="btn-coupon">Apply Coupon</button>
             </div>
 
-            {/* Subtotal */}
-            <div className="cart-subtotal">${item.price * item.quantity}</div>
+            <div className="cart-total-box">
+              <h3 className="total-title">Cart Total</h3>
+
+              <div className="total-row">
+                <span>Subtotal:</span>
+                <span>${subtotal.toFixed(2)}</span>
+              </div>
+              <hr className="total-divider" />
+
+              <div className="total-row">
+                <span>Shipping:</span>
+                <span>Free</span>
+              </div>
+              <hr className="total-divider" />
+
+              <div className="total-row total-row--bold">
+                <span>Total:</span>
+                <span>${subtotal.toFixed(2)}</span>
+              </div>
+
+              <button className="btn-checkout">Proceed to checkout</button>
+            </div>
           </div>
-        ))}
-      </div>
-
-      {/* ── Table action buttons ── */}
-      <div className="cart-actions">
-        <a href="/shop" className="btn-outline">Return To Shop</a>
-        <button className="btn-outline">Update Cart</button>
-      </div>
-
-      {/* ── Bottom section: coupon + cart total ── */}
-      <div className="cart-bottom">
-
-        {/* Coupon */}
-        <div className="coupon-wrap">
-          <input
-            className="coupon-input"
-            type="text"
-            placeholder="Coupon Code"
-            value={coupon}
-            onChange={(e) => setCoupon(e.target.value)}
-          />
-          <button className="btn-coupon">Apply Coupon</button>
-        </div>
-
-        {/* Cart Total */}
-        <div className="cart-total-box">
-          <h3 className="total-title">Cart Total</h3>
-
-          <div className="total-row">
-            <span>Subtotal:</span>
-            <span>${subtotal}</span>
-          </div>
-          <hr className="total-divider" />
-
-          <div className="total-row">
-            <span>Shipping:</span>
-            <span>Free</span>
-          </div>
-          <hr className="total-divider" />
-
-          <div className="total-row total-row--bold">
-            <span>Total:</span>
-            <span>${subtotal}</span>
-          </div>
-
-          <button className="btn-checkout">Procees to checkout</button>
-        </div>
-
-      </div>
+        </>
+      )}
     </div>
   );
 };

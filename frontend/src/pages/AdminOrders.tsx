@@ -1,24 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiEye, FiTrash2, FiSearch, FiDownload } from "react-icons/fi";
 import "./styles/adminOrders.css";
-
-interface Order {
-  id: string;
-  customer: string;
-  amount: number;
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
-  date: string;
-  items: number;
-}
+import { orderAPI } from "../services/api";
+import * as Types from "../types";
 
 const AdminOrders = () => {
-  const [orders] = useState<Order[]>([
-    { id: "ORD-001", customer: "John Doe", amount: 249.99, status: "delivered", date: "2024-01-15", items: 3 },
-    { id: "ORD-002", customer: "Jane Smith", amount: 189.50, status: "shipped", date: "2024-01-16", items: 2 },
-    { id: "ORD-003", customer: "Mike Johnson", amount: 399.00, status: "processing", date: "2024-01-17", items: 5 },
-    { id: "ORD-004", customer: "Sarah Williams", amount: 99.99, status: "pending", date: "2024-01-18", items: 1 },
-    { id: "ORD-005", customer: "Tom Brown", amount: 549.75, status: "delivered", date: "2024-01-19", items: 4 },
-  ]);
+  const [orders, setOrders] = useState<Types.Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const response = await orderAPI.getAllOrders();
+        if (response.success) {
+          setOrders(response.data);
+          setError("");
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch orders");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -48,75 +56,83 @@ const AdminOrders = () => {
         </div>
       </div>
 
-      <div className="orders-container">
-        <div className="filters-bar">
-          <div className="search-box-admin">
-            <FiSearch />
-            <input type="text" placeholder="Search order ID or customer..." />
-          </div>
-          <select className="filter-select">
-            <option>All Status</option>
-            <option>Pending</option>
-            <option>Processing</option>
-            <option>Shipped</option>
-            <option>Delivered</option>
-            <option>Cancelled</option>
-          </select>
-          <select className="filter-select">
-            <option>All Dates</option>
-            <option>Today</option>
-            <option>This Week</option>
-            <option>This Month</option>
-          </select>
-        </div>
+      {error && <div style={{ color: "#db4444", marginBottom: "20px", padding: "12px", background: "#ffe0e0", borderRadius: "4px" }}>{error}</div>}
 
-        <div className="orders-table">
-          <div className="table-header">
-            <div className="col-id">Order ID</div>
-            <div className="col-customer">Customer</div>
-            <div className="col-items">Items</div>
-            <div className="col-amount">Amount</div>
-            <div className="col-date">Date</div>
-            <div className="col-status">Status</div>
-            <div className="col-actions">Actions</div>
-          </div>
-
-          {orders.map((order) => (
-            <div key={order.id} className="table-row">
-              <div className="col-id">
-                <code className="order-id">{order.id}</code>
-              </div>
-              <div className="col-customer">{order.customer}</div>
-              <div className="col-items">
-                <span className="items-badge">{order.items}</span>
-              </div>
-              <div className="col-amount">${order.amount.toFixed(2)}</div>
-              <div className="col-date">{order.date}</div>
-              <div className="col-status">
-                <span className={`status-badge ${getStatusColor(order.status)}`}>
-                  {order.status}
-                </span>
-              </div>
-              <div className="col-actions">
-                <button className="action-btn view" title="View">
-                  <FiEye />
-                </button>
-                <button className="action-btn delete" title="Delete">
-                  <FiTrash2 />
-                </button>
-              </div>
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "40px", fontSize: "16px", color: "#666" }}>Loading orders...</div>
+      ) : (
+        <div className="orders-container">
+          <div className="filters-bar">
+            <div className="search-box-admin">
+              <FiSearch />
+              <input type="text" placeholder="Search order ID or customer..." />
             </div>
-          ))}
-        </div>
+            <select className="filter-select">
+              <option>All Status</option>
+              <option>Pending</option>
+              <option>Processing</option>
+              <option>Shipped</option>
+              <option>Delivered</option>
+              <option>Cancelled</option>
+            </select>
+            <select className="filter-select">
+              <option>All Dates</option>
+              <option>Today</option>
+              <option>This Week</option>
+              <option>This Month</option>
+            </select>
+          </div>
 
-        <div className="pagination">
-          <button className="page-btn">Previous</button>
-          <button className="page-btn active">1</button>
-          <button className="page-btn">2</button>
-          <button className="page-btn">3</button>
-          <button className="page-btn">Next</button>
+          <div className="orders-table">
+            <div className="table-header">
+              <div className="col-id">Order ID</div>
+              <div className="col-customer">Customer</div>
+              <div className="col-items">Items</div>
+              <div className="col-amount">Amount</div>
+              <div className="col-date">Date</div>
+              <div className="col-status">Status</div>
+              <div className="col-actions">Actions</div>
+            </div>
+
+            {orders.map((order) => (
+              <div key={order._id} className="table-row">
+                <div className="col-id">
+                  <code className="order-id">{order.orderId}</code>
+                </div>
+                <div className="col-customer">
+                  {order.billingDetails.firstName} {order.billingDetails.lastName}
+                </div>
+                <div className="col-items">
+                  <span className="items-badge">{order.items.length}</span>
+                </div>
+                <div className="col-amount">${order.total.toFixed(2)}</div>
+                <div className="col-date">{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "N/A"}</div>
+                <div className="col-status">
+                  <span className={`status-badge ${getStatusColor(order.status)}`}>
+                    {order.status}
+                  </span>
+                </div>
+                <div className="col-actions">
+                  <button className="action-btn view" title="View">
+                    <FiEye />
+                  </button>
+                  <button className="action-btn delete" title="Delete">
+                    <FiTrash2 />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="pagination">
+            <button className="page-btn">Previous</button>
+            <button className="page-btn active">1</button>
+            <button className="page-btn">2</button>
+            <button className="page-btn">3</button>
+            <button className="page-btn">Next</button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

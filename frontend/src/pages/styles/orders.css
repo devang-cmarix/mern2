@@ -1,0 +1,152 @@
+.orders-page {
+  padding: 60px 20px;
+  min-height: 620px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 32px;
+  font-size: 14px;
+}
+
+.breadcrumb a {
+  color: #7d8184;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: #000;
+}
+
+.bc-sep {
+  color: #bdbdbd;
+}
+
+.bc-current {
+  color: #000;
+  font-weight: 600;
+}
+
+.orders-header {
+  margin-bottom: 24px;
+}
+
+.orders-header h1 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.orders-header p {
+  color: #5a5f67;
+  line-height: 1.6;
+}
+
+.orders-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.orders-card {
+  background: #fff;
+  border: 1px solid #e7e7e7;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.orders-card span {
+  display: block;
+  color: #7d8184;
+  margin-bottom: 12px;
+}
+
+.orders-card strong {
+  font-size: 28px;
+  color: #111;
+}
+
+.orders-table {
+  background: #fff;
+  border: 1px solid #e7e7e7;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.orders-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 0.9fr 1fr 1.2fr;
+  align-items: center;
+  padding: 18px 24px;
+  gap: 16px;
+}
+
+.orders-row--head {
+  background: #fafafa;
+  font-weight: 600;
+  color: #333;
+}
+
+.orders-row:not(.orders-row--head) {
+  border-top: 1px solid #f1f1f1;
+}
+
+.orders-row code {
+  color: #db4444;
+  font-weight: 600;
+}
+
+.status-badge {
+  display: inline-flex;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-badge--success {
+  color: #2f7a3e;
+  background: #ecf7ed;
+}
+
+.status-badge--info {
+  color: #1f5f8a;
+  background: #e8f2fb;
+}
+
+.status-badge--warning {
+  color: #8a6200;
+  background: #fff4d8;
+}
+
+.status-badge--danger {
+  color: #a72c1f;
+  background: #fdecea;
+}
+
+@media (max-width: 960px) {
+  .orders-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .orders-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .orders-row--head {
+    display: none;
+  }
+
+  .orders-row {
+    border-top: 1px solid #f1f1f1;
+  }
+}
+
+@media (max-width: 640px) {
+  .orders-page {
+    padding: 40px 16px;
+  }
+}
