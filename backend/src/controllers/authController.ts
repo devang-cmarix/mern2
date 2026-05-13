@@ -28,7 +28,7 @@ export const signup = asyncHandler(async (req: AuthRequest, res: Response) => {
   });
 
   const token = jwt.sign(
-    { id: user._id, email: user.email, role: user.role },
+    { _id: user._id, email: user.email, role: user.role },
     process.env.JWT_SECRET || "secret",
     { expiresIn: "7d" }
   );
@@ -87,7 +87,7 @@ export const login = asyncHandler(async (req: AuthRequest, res: Response) => {
 });
 
 export const getCurrentUser = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const user = await User.findById(req.user?.id).select("-passwordHash");
+  const user = await User.findById(req.user?._id).select("-passwordHash");
 
   if (!user) {
     throw new AppError("User not found", 404);

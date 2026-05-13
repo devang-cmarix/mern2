@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FiHeart, FiEye } from "react-icons/fi";
 import { productAPI, cartAPI, wishlistAPI } from "../services/api";
 import { useCartWishlist } from "../context/CartWishlistContext";
+import { useAuth } from "../components/Navbar/AuthContext";
 import * as Types from "../types";
 import "./styles/products.css";
 
@@ -29,6 +30,7 @@ const StarRating = ({ rating }: { rating: number }) => {
 const Products = () => {
   const navigate = useNavigate();
   const { refreshCounts } = useCartWishlist();
+  const { isLoggedIn } = useAuth();
   const [products, setProducts] = useState<Types.Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -55,6 +57,10 @@ const Products = () => {
   }, []);
 
   const handleAddToWishlist = async (productId: string) => {
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
     setWishlistLoading(productId);
     try {
       await wishlistAPI.addToWishlist(productId);
@@ -67,6 +73,10 @@ const Products = () => {
   };
 
   const handleAddToCart = async (productId: string) => {
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
     setCartLoading(productId);
     try {
       await cartAPI.addToCart(productId, 1);

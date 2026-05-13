@@ -114,7 +114,8 @@
   font-weight: 600;
 }
 
-.review-status--published {
+.review-status--published,
+.review-status--approved {
   color: #1f5f8a;
   background: #e8f2fb;
 }

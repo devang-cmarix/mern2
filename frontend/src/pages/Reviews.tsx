@@ -1,22 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { reviewAPI } from "../services/api";
+import * as Types from "../types";
 import "./styles/reviews.css";
 
-interface Review {
-  id: string;
-  product: string;
-  date: string;
-  rating: number;
-  comment: string;
-  status: string;
-}
-
 const Reviews = () => {
-  const [reviews] = useState<Review[]>([
-    { id: "RV-3001", product: "Noise-Cancelling Headphones", date: "2025-12-07", rating: 5, comment: "Amazing audio quality and very comfortable for long use.", status: "Published" },
-    { id: "RV-3008", product: "Travel Smart Plug", date: "2025-12-13", rating: 4, comment: "Compact and works exactly as expected, perfect for travel.", status: "Published" },
-    { id: "RV-3014", product: "Wireless Charging Stand", date: "2025-12-20", rating: 3, comment: "Good charger but heats up a bit when charging overnight.", status: "Pending" },
-  ]);
+  const [reviews, setReviews] = useState<Types.Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setLoading(true);
+        const response = await reviewAPI.getUserReviews();
+        if (response.success) {
+          setReviews(response.data);
+          setError("");
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch reviews");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="reviews-page">
+        <div style={{ textAlign: "center", padding: "40px" }}>Loading reviews...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="reviews-page">
+        <div style={{ textAlign: "center", padding: "40px", color: "#db4444" }}>{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="reviews-page">
@@ -39,36 +65,42 @@ const Reviews = () => {
           <strong>{reviews.length}</strong>
         </div>
         <div className="review-card">
-          <span>Published</span>
-          <strong>{reviews.filter((review) => review.status === "Published").length}</strong>
+          <span>Approved</span>
+          <strong>{reviews.filter((review) => review.status === "approved").length}</strong>
         </div>
         <div className="review-card">
           <span>Pending</span>
-          <strong>{reviews.filter((review) => review.status !== "Published").length}</strong>
+          <strong>{reviews.filter((review) => review.status === "pending").length}</strong>
         </div>
       </section>
 
       <div className="reviews-list">
-        {reviews.map((review) => (
-          <article key={review.id} className="review-item">
-            <div className="review-top">
-              <div>
-                <h3>{review.product}</h3>
-                <div className="review-stars">
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <span key={index} className={index < review.rating ? "star star--active" : "star"}>&#9733;</span>
-                  ))}
+        {reviews.map((review) => {
+          const product = typeof review.productId === "string" ? null : review.productId;
+          const productName = product?.name || "Unknown Product";
+          const productId = typeof review.productId === "string" ? review.productId : review.productId._id;
+
+          return (
+            <article key={review._id} className="review-item">
+              <div className="review-top">
+                <div>
+                  <h3>{productName}</h3>
+                  <div className="review-stars">
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <span key={index} className={index < review.rating ? "star star--active" : "star"}>&#9733;</span>
+                    ))}
+                  </div>
                 </div>
+                <span className={`review-status review-status--${review.status.toLowerCase()}`}>{review.status}</span>
               </div>
-              <span className={`review-status review-status--${review.status.toLowerCase()}`}>{review.status}</span>
-            </div>
-            <p className="review-text">{review.comment}</p>
-            <div className="review-footer">
-              <span>{review.date}</span>
-              <Link to="/detail" className="review-link">View Product</Link>
-            </div>
-          </article>
-        ))}
+              <p className="review-text">{review.comment}</p>
+              <div className="review-footer">
+                <span>{new Date(review.createdAt || "").toLocaleDateString()}</span>
+                <Link to={`/detail/${productId}`} className="review-link">View Product</Link>
+              </div>
+            </article>
+          );
+        })}
       </div>
     </div>
   );

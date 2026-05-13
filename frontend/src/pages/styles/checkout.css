@@ -61,6 +61,15 @@
   color: #1a1a1a;
 }
 
+.co-error {
+  border: 1px solid rgba(219, 68, 68, 0.28);
+  border-radius: 4px;
+  background: rgba(219, 68, 68, 0.08);
+  color: #b83232;
+  padding: 12px 14px;
+  font-size: 14px;
+}
+
 .co-fields {
   display: flex;
   flex-direction: column;

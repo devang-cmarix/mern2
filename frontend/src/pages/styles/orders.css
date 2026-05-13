@@ -68,6 +68,42 @@
   color: #111;
 }
 
+.orders-alert {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.orders-alert--error {
+  background: #fff1f1;
+  color: #b42318;
+  border: 1px solid #ffd1d1;
+}
+
+.orders-alert--success {
+  background: #f0fff4;
+  color: #16703c;
+  border: 1px solid #c7f0d8;
+}
+
+.orders-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.orders-toolbar select {
+  min-width: 160px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  color: #1a1a1a;
+  font: inherit;
+}
+
 .orders-table {
   background: #fff;
   border: 1px solid #e7e7e7;
@@ -77,7 +113,7 @@
 
 .orders-row {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 0.9fr 1fr 1.2fr;
+  grid-template-columns: 1.5fr 1fr 0.8fr 1fr 1.1fr 1fr;
   align-items: center;
   padding: 18px 24px;
   gap: 16px;
@@ -126,6 +162,41 @@
   background: #fdecea;
 }
 
+.orders-cancel-btn {
+  border: 1px solid #db4444;
+  border-radius: 6px;
+  background: #fff;
+  color: #db4444;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.orders-cancel-btn:hover {
+  background: #db4444;
+  color: #fff;
+}
+
+.orders-cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.orders-muted {
+  color: #a0a0a0;
+}
+
+.orders-empty {
+  border: 1px solid #e7e7e7;
+  border-radius: 16px;
+  background: #fff;
+  padding: 42px 20px;
+  color: #666;
+  text-align: center;
+}
+
 @media (max-width: 960px) {
   .orders-summary {
     grid-template-columns: 1fr;
@@ -143,6 +214,19 @@
   .orders-row {
     border-top: 1px solid #f1f1f1;
   }
+
+  .orders-row > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .orders-row > div:nth-child(1)::before { content: "Order ID"; color: #777; }
+  .orders-row > div:nth-child(2)::before { content: "Date"; color: #777; }
+  .orders-row > div:nth-child(3)::before { content: "Items"; color: #777; }
+  .orders-row > div:nth-child(4)::before { content: "Total"; color: #777; }
+  .orders-row > div:nth-child(5)::before { content: "Status"; color: #777; }
+  .orders-row > div:nth-child(6)::before { content: "Action"; color: #777; }
 }
 
 @media (max-width: 640px) {

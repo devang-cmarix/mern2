@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
-import { FiEye, FiTrash2, FiSearch, FiDownload } from "react-icons/fi";
+import { FiSearch, FiDownload } from "react-icons/fi";
 import "./styles/adminOrders.css";
 import { orderAPI } from "../services/api";
 import * as Types from "../types";
+import { getAllowedTransitions, formatStatus,type OrderStatus } from "../utils/orderStatus";
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState<Types.Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updatingOrderId, setUpdatingOrderId] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -30,18 +33,45 @@ const AdminOrders = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "delivered":
-        return "success";
-      case "shipped":
-        return "info";
-      case "processing":
-        return "warning";
-      case "pending":
-        return "warning";
-      case "cancelled":
-        return "danger";
-      default:
-        return "secondary";
+      case "delivered":  return "success";
+      case "shipped":    return "info";
+      case "processing": return "warning";
+      case "pending":    return "warning";
+      case "cancelled":  return "danger";
+      default:           return "secondary";
+    }
+  };
+
+  // ✅ Check if status is a final state (no more changes allowed)
+  const isFinalStatus = (status: string) => {
+    return status === "delivered" || status === "cancelled";
+  };
+
+  const handleStatusChange = async (
+    orderId: string | undefined,
+    status: Types.Order["status"]
+  ) => {
+    if (!orderId) return;
+
+    try {
+      setUpdatingOrderId(orderId);
+      setError("");
+      setSuccess("");
+      const response = await orderAPI.updateOrderStatus(orderId, status);
+      if (response.success) {
+        setOrders((current) =>
+          current.map((order) =>
+            order._id === orderId ? response.data : order
+          )
+        );
+        setSuccess(`Order marked as ${formatStatus(status as OrderStatus)}`);
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to update order status"
+      );
+    } finally {
+      setUpdatingOrderId("");
     }
   };
 
@@ -56,10 +86,13 @@ const AdminOrders = () => {
         </div>
       </div>
 
-      {error && <div style={{ color: "#db4444", marginBottom: "20px", padding: "12px", background: "#ffe0e0", borderRadius: "4px" }}>{error}</div>}
+      {error && <div className="admin-alert error">{error}</div>}
+      {success && <div className="admin-alert success">{success}</div>}
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: "40px", fontSize: "16px", color: "#666" }}>Loading orders...</div>
+        <div style={{ textAlign: "center", padding: "40px", fontSize: "16px", color: "#666" }}>
+          Loading orders...
+        </div>
       ) : (
         <div className="orders-container">
           <div className="filters-bar">
@@ -94,34 +127,64 @@ const AdminOrders = () => {
               <div className="col-actions">Actions</div>
             </div>
 
-            {orders.map((order) => (
-              <div key={order._id} className="table-row">
-                <div className="col-id">
-                  <code className="order-id">{order.orderId}</code>
+            {orders.map((order) => {
+              const allowedStatuses = getAllowedTransitions(order.status as OrderStatus);
+              const isDisabled =
+                updatingOrderId === order._id || isFinalStatus(order.status);
+
+              return (
+                <div key={order._id} className="table-row">
+                  <div className="col-id">
+                    <code className="order-id">{order.orderId}</code>
+                  </div>
+                  <div className="col-customer">
+                    {order.billingDetails.firstName} {order.billingDetails.lastName}
+                  </div>
+                  <div className="col-items">
+                    <span className="items-badge">{order.items.length}</span>
+                  </div>
+                  <div className="col-amount">${order.total.toFixed(2)}</div>
+                  <div className="col-date">
+                    {order.createdAt
+                      ? new Date(order.createdAt).toLocaleDateString()
+                      : "N/A"}
+                  </div>
+                  <div className="col-status">
+                    <span className={`status-badge ${getStatusColor(order.status)}`}>
+                      {formatStatus(order.status as OrderStatus)}
+                    </span>
+                  </div>
+                  <div className="col-actions">
+                    {isFinalStatus(order.status) ? (
+                      // ✅ Show a plain badge instead of select for final states
+                      <span className={`status-badge ${getStatusColor(order.status)}`}>
+                        {formatStatus(order.status as OrderStatus)}
+                      </span>
+                    ) : (
+                      <select
+                        className="order-status-select"
+                        value={order.status}
+                        onChange={(e) =>
+                          handleStatusChange(
+                            order._id,
+                            e.target.value as Types.Order["status"]
+                          )
+                        }
+                        disabled={isDisabled}
+                        aria-label={`Update status for ${order.orderId}`}
+                      >
+                        {/* ✅ Only show allowed transitions */}
+                        {allowedStatuses.map((status) => (
+                          <option key={status} value={status}>
+                            {formatStatus(status)}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
                 </div>
-                <div className="col-customer">
-                  {order.billingDetails.firstName} {order.billingDetails.lastName}
-                </div>
-                <div className="col-items">
-                  <span className="items-badge">{order.items.length}</span>
-                </div>
-                <div className="col-amount">${order.total.toFixed(2)}</div>
-                <div className="col-date">{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "N/A"}</div>
-                <div className="col-status">
-                  <span className={`status-badge ${getStatusColor(order.status)}`}>
-                    {order.status}
-                  </span>
-                </div>
-                <div className="col-actions">
-                  <button className="action-btn view" title="View">
-                    <FiEye />
-                  </button>
-                  <button className="action-btn delete" title="Delete">
-                    <FiTrash2 />
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="pagination">

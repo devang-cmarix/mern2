@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { FiMenu, FiX, FiHome, FiPackage, FiUsers, FiBarChart2, FiSettings, FiLogOut } from "react-icons/fi";
+import { FiMenu, FiX, FiHome, FiPackage, FiUsers, FiBarChart2, FiSettings, FiLogOut, FiStar } from "react-icons/fi";
 import { useAdminAuth } from "../../context/AdminAuthContext";
 import "./AdminPanel.css";
 
@@ -63,6 +63,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ children }) => {
           >
             <FiBarChart2 className="nav-icon" />
             <span className={`nav-label ${!sidebarOpen ? "hidden" : ""}`}>Orders</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/reviews"
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+          >
+            <FiStar className="nav-icon" />
+            <span className={`nav-label ${!sidebarOpen ? "hidden" : ""}`}>Reviews</span>
           </NavLink>
 
           <NavLink 

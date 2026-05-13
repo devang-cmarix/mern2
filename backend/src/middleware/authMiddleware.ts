@@ -4,6 +4,7 @@ import { AppError } from "./errorMiddleware.js";
 
 export interface AuthRequest extends Request {
   user?: {
+    _id?: string;
     id?: string;
     email?: string;
     role?: "user" | "admin";
@@ -25,8 +26,9 @@ export const authMiddleware = (
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret") as AuthRequest["user"];
+    const userId = decoded?.id || decoded?._id;
 
-    req.user = decoded;
+    req.user = decoded ? { ...decoded, id: userId, _id: userId } : decoded;
     next();
   } catch (error) {
     throw new AppError("Invalid or expired token", 401);

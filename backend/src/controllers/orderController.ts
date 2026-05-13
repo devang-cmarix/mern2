@@ -144,6 +144,10 @@ export const cancelOrder = asyncHandler(async (req: AuthRequest, res: Response) 
     throw new AppError("Order not found", 404);
   }
 
+  if (order.userId.toString() !== req.user?.id && req.user?.role !== "admin") {
+    throw new AppError("Unauthorized", 403);
+  }
+
   if (order.status !== "pending" && order.status !== "processing") {
     throw new AppError("Cannot cancel this order", 400);
   }

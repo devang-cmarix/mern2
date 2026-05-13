@@ -253,6 +253,51 @@ export interface DashboardResponse {
   data: DashboardStats;
 }
 
+// Review Types
+export interface Review {
+  _id?: string;
+  userId: string | User;
+  productId: string | Product;
+  rating: number;
+  comment: string;
+  status: "pending" | "approved" | "rejected";
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ReviewsResponse {
+  success: boolean;
+  data: Review[];
+  total?: number;
+  page?: number;
+  limit?: number;
+}
+
+export interface ReviewResponse {
+  success: boolean;
+  data: Review;
+}
+
+export interface CreateReviewPayload {
+  productId: string;
+  rating: number;
+  comment: string;
+}
+
+export interface UpdateReviewPayload {
+  rating?: number;
+  comment?: string;
+}
+
+export interface UpdateReviewStatusPayload {
+  status: "pending" | "approved" | "rejected";
+}
+
+export interface DashboardResponse {
+  success: boolean;
+  data: DashboardStats;
+}
+
 // Error Response
 export interface ErrorResponse {
   success: false;

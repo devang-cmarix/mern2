@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./styles/cart.css";
 import { cartAPI } from "../services/api";
 import { useCartWishlist } from "../context/CartWishlistContext";
 import * as Types from "../types";
 
 const Cart = () => {
+  const navigate = useNavigate();
   const [cart, setCart] = useState<Types.Cart | null>(null);
   const { refreshCounts } = useCartWishlist();
   const [loading, setLoading] = useState(true);
@@ -160,7 +162,7 @@ const Cart = () => {
           </div>
 
           <div className="cart-actions">
-            <a href="/shop" className="btn-outline">Return To Shop</a>
+            <Link to="/products" className="btn-outline">Return To Shop</Link>
             <button className="btn-outline" onClick={loadCart}>Refresh Cart</button>
           </div>
 
@@ -196,7 +198,9 @@ const Cart = () => {
                 <span>${subtotal.toFixed(2)}</span>
               </div>
 
-              <button className="btn-checkout">Proceed to checkout</button>
+              <button className="btn-checkout" onClick={() => navigate("/checkout")}>
+                Proceed to checkout
+              </button>
             </div>
           </div>
         </>

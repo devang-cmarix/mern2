@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { productAPI, cartAPI, wishlistAPI } from "../../services/api";
+import { productAPI, cartAPI, wishlistAPI, reviewAPI } from "../../services/api";
 import { useCartWishlist } from "../../context/CartWishlistContext";
+import { useAuth } from "../../components/Navbar/AuthContext";
 import * as Types from "../../types";
 import "./detsils.css";
 
@@ -12,6 +13,7 @@ interface ProductDetailProps {
 const ProductDetail = ({ productId }: ProductDetailProps) => {
   const navigate = useNavigate();
   const { refreshCounts } = useCartWishlist();
+  const { isLoggedIn } = useAuth();
   const [product, setProduct] = useState<Types.Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -21,9 +23,16 @@ const ProductDetail = ({ productId }: ProductDetailProps) => {
   const [qty, setQty] = useState(2);
   const [wishlisted, setWishlisted] = useState(false);
   const [cartLoading, setCartLoading] = useState(false);
+  const [reviews, setReviews] = useState<Types.Review[]>([]);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewError, setReviewError] = useState("");
+  const [reviewSuccess, setReviewSuccess] = useState("");
 
   useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchProductAndReviews = async () => {
       if (!productId) {
         setError("Product ID not provided");
         setLoading(false);
@@ -32,10 +41,18 @@ const ProductDetail = ({ productId }: ProductDetailProps) => {
 
       try {
         setLoading(true);
-        const response = await productAPI.getProductById(productId);
-        if (response.success) {
-          setProduct(response.data);
+        const [productResponse, reviewsResponse] = await Promise.all([
+          productAPI.getProductById(productId),
+          reviewAPI.getReviews({ productId, status: "approved" })
+        ]);
+
+        if (productResponse.success) {
+          setProduct(productResponse.data);
           setError("");
+        }
+
+        if (reviewsResponse.success) {
+          setReviews(reviewsResponse.data);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch product");
@@ -44,10 +61,14 @@ const ProductDetail = ({ productId }: ProductDetailProps) => {
       }
     };
 
-    fetchProduct();
+    fetchProductAndReviews();
   }, [productId]);
 
   const handleAddToCart = async () => {
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
     if (!product?._id) return;
 
     setCartLoading(true);
@@ -63,6 +84,10 @@ const ProductDetail = ({ productId }: ProductDetailProps) => {
   };
 
   const handleAddToWishlist = async () => {
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
     if (!product?._id) return;
 
     try {
@@ -71,6 +96,60 @@ const ProductDetail = ({ productId }: ProductDetailProps) => {
       await refreshCounts();
     } catch (err) {
       console.error("Failed to add to wishlist:", err);
+    }
+  };
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+    if (!product?._id) return;
+    const trimmedComment = reviewComment.trim();
+
+    if (!trimmedComment) {
+      setReviewError("Please add a comment before submitting your review.");
+      setReviewSuccess("");
+      return;
+    }
+
+    setSubmittingReview(true);
+    try {
+      setReviewError("");
+      setReviewSuccess("");
+      const response = await reviewAPI.createReview({
+        productId: product._id,
+        rating: reviewRating,
+        comment: trimmedComment,
+      });
+
+      if (response.success) {
+        setShowReviewForm(false);
+        setReviewComment("");
+        setReviewRating(5);
+        setReviewSuccess("Review submitted successfully.");
+        // Refresh reviews
+        const reviewsResponse = await reviewAPI.getReviews({ productId: product._id, status: "approved" });
+        if (reviewsResponse.success) {
+          setReviews(reviewsResponse.data);
+          const ratingTotal = reviewsResponse.data.reduce((sum, review) => sum + review.rating, 0);
+          const averageRating = reviewsResponse.data.length ? ratingTotal / reviewsResponse.data.length : 0;
+          setProduct((current) => current
+            ? {
+                ...current,
+                reviews: reviewsResponse.data.length,
+                rating: Math.round(averageRating * 10) / 10,
+              }
+            : current
+          );
+        }
+      }
+    } catch (err) {
+      setReviewError(err instanceof Error ? err.message : "Failed to submit review");
+      setReviewSuccess("");
+    } finally {
+      setSubmittingReview(false);
     }
   };
 
@@ -286,6 +365,89 @@ const ProductDetail = ({ productId }: ProductDetailProps) => {
               </div>
             </div>
 
+          </div>
+
+          {/* Reviews Section */}
+          <div className="pd-reviews-section">
+            <h3>Customer Reviews ({reviews.length})</h3>
+
+            {isLoggedIn && (
+              <button
+                className="btn-write-review"
+                onClick={() => {
+                  setShowReviewForm(!showReviewForm);
+                  setReviewError("");
+                  setReviewSuccess("");
+                }}
+              >
+                Write a Review
+              </button>
+            )}
+
+            {reviewError && <div className="review-message review-message--error" role="alert">{reviewError}</div>}
+            {reviewSuccess && <div className="review-message review-message--success" role="status">{reviewSuccess}</div>}
+
+            {showReviewForm && (
+              <form className="review-form" onSubmit={handleSubmitReview}>
+                <div className="review-form-group">
+                  <label>Rating:</label>
+                  <div className="rating-input">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        className={`star-btn ${star <= reviewRating ? "active" : ""}`}
+                        onClick={() => setReviewRating(star)}
+                      >
+                        ★
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="review-form-group">
+                  <label>Comment:</label>
+                  <textarea
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
+                    placeholder="Share your thoughts about this product..."
+                    required
+                  />
+                </div>
+                <button type="submit" className="btn-submit-review" disabled={submittingReview}>
+                  {submittingReview ? "Submitting..." : "Submit Review"}
+                </button>
+              </form>
+            )}
+
+            <div className="reviews-list">
+              {reviews.length === 0 ? (
+                <p className="no-reviews">No reviews yet. Be the first to review this product!</p>
+              ) : (
+                reviews.map((review) => {
+                  const user = typeof review.userId === "string" ? null : review.userId;
+                  const userName = user ? `${user.firstName} ${user.lastName}` : "Anonymous";
+
+                  return (
+                    <div key={review._id} className="review-item">
+                      <div className="review-header">
+                        <strong>{userName}</strong>
+                        <div className="review-stars">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <span key={star} className={star <= review.rating ? "star active" : "star"}>
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <p className="review-comment">{review.comment}</p>
+                      <span className="review-date">
+                        {new Date(review.createdAt || "").toLocaleDateString()}
+                      </span>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
 
         </div>

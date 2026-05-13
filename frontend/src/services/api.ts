@@ -25,6 +25,8 @@ const shouldUseAdminToken = (endpoint: string, method: string) => {
   if (/^\/products\/[^/]+$/.test(path) && ["PUT", "DELETE"].includes(normalizedMethod)) return true;
   if (path === "/categories" && normalizedMethod !== "GET") return true;
   if (/^\/categories\/[^/]+$/.test(path) && ["PUT", "DELETE"].includes(normalizedMethod)) return true;
+  if (path.startsWith("/reviews/admin")) return true;
+  if (/^\/reviews\/[^/]+\/status$/.test(path)) return true;
 
   return false;
 };
@@ -397,6 +399,61 @@ export const categoryAPI = {
   },
 };
 
+// ============ REVIEW ENDPOINTS ============
+
+export const reviewAPI = {
+  getReviews: async (filters?: Types.PaginationParams & { productId?: string; userId?: string; status?: string }) => {
+    const queryString = new URLSearchParams(
+      filters ? Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])) : []
+    ).toString();
+    return apiRequest<Types.ReviewsResponse>(`/reviews${queryString ? `?${queryString}` : ""}`, {
+      method: "GET",
+    });
+  },
+
+  getUserReviews: async (filters?: Types.PaginationParams) => {
+    const queryString = new URLSearchParams(
+      filters ? Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])) : []
+    ).toString();
+    return apiRequest<Types.ReviewsResponse>(`/reviews/user${queryString ? `?${queryString}` : ""}`, {
+      method: "GET",
+    });
+  },
+
+  createReview: async (payload: Types.CreateReviewPayload) => {
+    return apiRequest<Types.ReviewResponse>("/reviews", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  updateReview: async (reviewId: string, payload: Types.UpdateReviewPayload) => {
+    return apiRequest<Types.ReviewResponse>(`/reviews/${reviewId}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  deleteReview: async (reviewId: string) => {
+    return apiRequest<{ success: boolean }>(`/reviews/${reviewId}`, {
+      method: "DELETE",
+    });
+  },
+
+  adminDeleteReview: async (reviewId: string) => {
+    return apiRequest<{ success: boolean }>(`/reviews/admin/${reviewId}`, {
+      method: "DELETE",
+    });
+  },
+
+  updateReviewStatus: async (reviewId: string, payload: Types.UpdateReviewStatusPayload) => {
+    return apiRequest<Types.ReviewResponse>(`/reviews/${reviewId}/status`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+  },
+};
+
 // ============ DASHBOARD ENDPOINTS ============
 
 export const dashboardAPI = {
@@ -417,4 +474,5 @@ export default {
   couponAPI,
   categoryAPI,
   dashboardAPI,
+  reviewAPI,
 };
