@@ -270,7 +270,7 @@ export const orderAPI = {
     });
   },
 
-  getOrders: async (filters?: Types.PaginationParams) => {
+  getOrders: async (filters?: Types.OrderFilters) => {
     const queryString = new URLSearchParams(
       filters ? Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])) : []
     ).toString();

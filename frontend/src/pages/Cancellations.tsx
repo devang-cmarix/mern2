@@ -1,22 +1,47 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { orderAPI } from "../services/api";
+import type * as Types from "../types";
 import "./styles/cancellations.css";
 
-interface Cancellation {
-  id: string;
-  product: string;
-  date: string;
-  reason: string;
-  amount: number;
-  status: string;
-}
+const formatDate = (value: string | undefined) => {
+  if (!value) return "-";
+  const date = new Date(value);
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
 
 const Cancellations = () => {
-  const [cancellations] = useState<Cancellation[]>([
-    { id: "#CAN-1021", product: "Wireless Earbuds", date: "2025-12-02", reason: "Delivery delay", amount: 59.99, status: "Refunded" },
-    { id: "#CAN-1033", product: "Leather Backpack", date: "2025-12-09", reason: "Changed mind", amount: 120.0, status: "Processing" },
-    { id: "#CAN-1045", product: "Smartwatch Pro", date: "2025-12-16", reason: "Found better price", amount: 199.95, status: "Refunded" },
-  ]);
+  const [cancellations, setCancellations] = useState<Types.Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadCancellations = async () => {
+      try {
+        setLoading(true);
+        const response = await orderAPI.getOrders({ status: "cancelled" });
+        if (response.success) {
+          setCancellations(response.data);
+          setError("");
+        } else {
+          setError("Unable to load cancellations.");
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to load cancellations.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCancellations();
+  }, []);
+
+  const refundedCount = cancellations.filter((item) => item.status === "cancelled").length;
+  const pendingCount = cancellations.filter((item) => item.status !== "cancelled").length;
 
   return (
     <div className="cancellations-page">
@@ -29,7 +54,7 @@ const Cancellations = () => {
       <header className="cancellations-header">
         <div>
           <h1>My Cancellations</h1>
-          <p>Review canceled orders, refund statuses, and reasons for each cancellation request.</p>
+          <p>Review canceled orders, refund statuses, and a summary of each request.</p>
         </div>
       </header>
 
@@ -39,34 +64,48 @@ const Cancellations = () => {
           <strong>{cancellations.length}</strong>
         </div>
         <div className="cancel-card">
-          <span>Refunded</span>
-          <strong>{cancellations.filter((item) => item.status === "Refunded").length}</strong>
+          <span>Cancelled</span>
+          <strong>{refundedCount}</strong>
         </div>
         <div className="cancel-card">
           <span>Pending</span>
-          <strong>{cancellations.filter((item) => item.status !== "Refunded").length}</strong>
+          <strong>{pendingCount}</strong>
         </div>
       </section>
 
-      <div className="cancel-list">
-        {cancellations.map((item) => (
-          <article key={item.id} className="cancel-card-row">
-            <div className="cancel-main">
-              <div className="cancel-details">
-                <h3>{item.product}</h3>
-                <p>{item.reason}</p>
+      {loading ? (
+        <div className="cancel-list">
+          <div className="cancel-empty">Loading cancellations...</div>
+        </div>
+      ) : error ? (
+        <div className="cancel-list">
+          <div className="cancel-empty">{error}</div>
+        </div>
+      ) : cancellations.length === 0 ? (
+        <div className="cancel-list">
+          <div className="cancel-empty">You have no cancelled orders yet.</div>
+        </div>
+      ) : (
+        <div className="cancel-list">
+          {cancellations.map((item) => (
+            <article key={item._id} className="cancel-card-row">
+              <div className="cancel-main">
+                <div className="cancel-details">
+                  <h3>{item.items.length > 1 ? `${item.items[0].productName} + ${item.items.length - 1} more` : item.items[0]?.productName || "Order Item"}</h3>
+                  <p>{item.status === "cancelled" ? "Order was cancelled." : "Cancellation pending."}</p>
+                </div>
+                <div className="cancel-meta">
+                  <span>{formatDate(item.createdAt)}</span>
+                  <span>${item.total.toFixed(2)}</span>
+                </div>
               </div>
-              <div className="cancel-meta">
-                <span>{item.date}</span>
-                <span>${item.amount.toFixed(2)}</span>
+              <div className="cancel-status">
+                <strong>{item.status.charAt(0).toUpperCase() + item.status.slice(1)}</strong>
               </div>
-            </div>
-            <div className="cancel-status">
-              <strong>{item.status}</strong>
-            </div>
-          </article>
-        ))}
-      </div>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

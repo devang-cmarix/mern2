@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { FiHeart, FiEye } from "react-icons/fi";
 import { productAPI, cartAPI, wishlistAPI } from "../services/api";
 import { useCartWishlist } from "../context/CartWishlistContext";
@@ -29,6 +29,9 @@ const StarRating = ({ rating }: { rating: number }) => {
 
 const Products = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const category = searchParams.get("category") ?? undefined;
+  const titleText = category ? `Category: ${category}` : "Explore Our Products";
   const { refreshCounts } = useCartWishlist();
   const { isLoggedIn } = useAuth();
   const [products, setProducts] = useState<Types.Product[]>([]);
@@ -41,7 +44,7 @@ const Products = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await productAPI.getProducts({ status: "active" });
+        const response = await productAPI.getProducts({ status: "active", category });
         if (response.success) {
           setProducts(response.data);
           setError("");
@@ -54,7 +57,7 @@ const Products = () => {
     };
 
     fetchProducts();
-  }, []);
+  }, [category]);
 
   const handleAddToWishlist = async (productId: string) => {
     if (!isLoggedIn) {
@@ -100,7 +103,7 @@ const Products = () => {
             <span className="products-bar" />
             <span className="products-label-text">Our Products</span>
           </div>
-          <h2 className="products-title">Explore Our Products</h2>
+          <h2 className="products-title">{titleText}</h2>
         </div>
         <div className="loading">Loading products...</div>
       </section>
@@ -115,7 +118,7 @@ const Products = () => {
             <span className="products-bar" />
             <span className="products-label-text">Our Products</span>
           </div>
-          <h2 className="products-title">Explore Our Products</h2>
+          <h2 className="products-title">{titleText}</h2>
         </div>
         <div className="error">{error}</div>
       </section>
@@ -130,7 +133,9 @@ const Products = () => {
           <span className="products-bar" />
           <span className="products-label-text">Our Products</span>
         </div>
-        <h2 className="products-title">Explore Our Products</h2>
+        <h2 className="products-title">
+          {category ? `Category: ${category}` : "Explore Our Products"}
+        </h2>
       </div>
 
       {/* ── PRODUCTS GRID ── */}

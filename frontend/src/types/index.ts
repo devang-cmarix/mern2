@@ -312,3 +312,7 @@ export interface PaginationParams {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
+
+export interface OrderFilters extends PaginationParams {
+  status?: Order["status"];
+}
