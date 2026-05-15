@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./styles/cart.css";
-import { cartAPI } from "../services/api";
+import { cartAPI, couponAPI } from "../services/api";
 import { useCartWishlist } from "../context/CartWishlistContext";
 import * as Types from "../types";
 
@@ -12,6 +12,7 @@ const Cart = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [coupon, setCoupon] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
 
   const productIdFromItem = (item: Types.CartItem) =>
     typeof item.productId === "string" ? item.productId : item.productId._id || "";
@@ -65,14 +66,41 @@ const Cart = () => {
       setError(err instanceof Error ? err.message : "Could not remove item");
     }
   };
+  
+  const applyCoupon = async () => {
+    try {
+      const response = await couponAPI.validateCoupon(coupon);
 
-  const subtotal = cart?.total ??
-    cart?.items.reduce((sum, item) => {
-      const product = typeof item.productId === "string" ? null : item.productId;
-      const price = product?.price ?? 0;
-      return sum + price * item.quantity;
-    }, 0) ?? 0;
+      if (response.success) {
+        setCouponDiscount(response.data.discount);
+      } else {
+        alert("Invalid coupon");
+      }
+    } catch {
+      alert("Coupon failed");
+    }
+  };
+  // const subtotal = cart?.total ??
+  //   cart?.items.reduce((sum, item) => {
+  //     const product = typeof item.productId === "string" ? null : item.productId;
+  //     const price = (product?.discountPrice || product?.price) ?? 0;
+  //     return sum + price * item.quantity;
+  //   }, 0) ?? 0;
+const subtotal =
+  cart?.items.reduce((sum, item) => {
+    const product =
+      typeof item.productId === "string"
+        ? null
+        : item.productId;
 
+    const price =
+      product?.discountPrice !== undefined &&
+      product?.discountPrice !== null
+        ? product.discountPrice
+        : product?.price || 0;
+
+    return sum + price * item.quantity;
+  }, 0) || 0;
   return (
     <div className="cart-page">
 
@@ -114,7 +142,7 @@ const Cart = () => {
             {cart.items.map((item) => {
               const product = typeof item.productId === "string" ? null : item.productId;
               const itemKey = product?._id || String(item.productId);
-              const price = product?.price ?? 0;
+              const price = (product?.discountPrice || product?.price) ?? 0;
               const image = product?.images?.[0] || "/images/FlashSale1.jpg";
               const name = product?.name || "Product";
 
@@ -175,7 +203,7 @@ const Cart = () => {
                 value={coupon}
                 onChange={(e) => setCoupon(e.target.value)}
               />
-              <button className="btn-coupon">Apply Coupon</button>
+              <button className="btn-coupon" onClick={applyCoupon}>Apply Coupon</button>
             </div>
 
             <div className="cart-total-box">
@@ -187,6 +215,16 @@ const Cart = () => {
               </div>
               <hr className="total-divider" />
 
+              {couponDiscount > 0 && (
+                <>
+                  <hr className="total-divider" />
+                  <div className="total-row">
+                    <span>Coupon Discount:</span>
+                    <span>- ${couponDiscount.toFixed(2)}</span>
+                  </div>
+                </>
+              )}
+              
               <div className="total-row">
                 <span>Shipping:</span>
                 <span>Free</span>
@@ -195,7 +233,7 @@ const Cart = () => {
 
               <div className="total-row total-row--bold">
                 <span>Total:</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>${(subtotal - couponDiscount).toFixed(2)}</span>
               </div>
 
               <button className="btn-checkout" onClick={() => navigate("/checkout")}>

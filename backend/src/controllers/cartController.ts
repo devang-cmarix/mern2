@@ -61,12 +61,14 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
     }
   }
   cart.total = total;
-
   await cart.save();
+  
+  const AddedCart = await Cart.findById(cart._id)
+  .populate("items.productId");
 
   res.json({
     success: true,
-    data: cart,
+    data: AddedCart,
     message: "Product added to cart",
   });
 });
@@ -106,9 +108,11 @@ export const updateCartItem = asyncHandler(async (req: AuthRequest, res: Respons
 
   await cart.save();
 
+  const UpdatedCart = await Cart.findById(cart._id)
+  .populate("items.productId");
   res.json({
     success: true,
-    data: cart,
+    data: UpdatedCart,
     message: "Cart updated",
   });
 });
@@ -135,9 +139,12 @@ export const removeFromCart = asyncHandler(async (req: AuthRequest, res: Respons
 
   await cart.save();
 
+  const UpdatedCart = await Cart.findById(cart._id)
+  .populate("items.productId");
+  
   res.json({
     success: true,
-    data: cart,
+    data: UpdatedCart,
     message: "Product removed from cart",
   });
 });

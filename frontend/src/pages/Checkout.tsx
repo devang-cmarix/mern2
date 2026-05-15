@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles/checkout.css";
-import { cartAPI, orderAPI } from "../services/api";
+import { cartAPI, orderAPI, couponAPI } from "../services/api";
 import { useCartWishlist } from "../context/CartWishlistContext";
 import { useAuth } from "../components/Navbar/AuthContext";
 import * as Types from "../types";
@@ -28,6 +28,9 @@ const Checkout = () => {
 
   const [paymentMethod, setPaymentMethod] = useState<"bank" | "cod">("cod");
   const [coupon, setCoupon] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<Types.Coupon | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [couponSuccess, setCouponSuccess] = useState("");
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -54,13 +57,51 @@ const Checkout = () => {
     return sum + (price * item.quantity);
   }, 0) || 0;
 
+  // Calculate coupon discount
+  let discountAmount = 0;
+  if (appliedCoupon) {
+    if (appliedCoupon.discountType === "percentage") {
+      discountAmount = (subtotal * appliedCoupon.discount) / 100;
+    } else {
+      discountAmount = appliedCoupon.discount;
+    }
+  }
+
   const shipping = subtotal > 50 ? 0 : 10; // Free shipping over $50
-  const tax = subtotal * 0.08; // 8% tax
-  const total = subtotal + shipping + tax;
+  const tax = subtotal * 0.08; // Tax on product-discounted subtotal, before coupon
+  const total = subtotal - discountAmount + shipping + tax;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!coupon.trim()) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+
+    try {
+      setCouponError("");
+      setCouponSuccess("");
+      const response = await couponAPI.validateCoupon(coupon.trim());
+      if (response.success && response.data) {
+        setAppliedCoupon(response.data);
+        setCouponSuccess(`Coupon applied! Discount: ${response.data.discountType === "percentage" ? response.data.discount + "%" : "$" + response.data.discount}`);
+        setCoupon("");
+      }
+    } catch (err) {
+      setCouponError(err instanceof Error ? err.message : "Invalid coupon code");
+      setAppliedCoupon(null);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCoupon("");
+    setCouponError("");
+    setCouponSuccess("");
   };
 
   const handlePlaceOrder = async () => {
@@ -89,7 +130,7 @@ const Checkout = () => {
           apartment: form.apartment,
         },
         paymentMethod,
-        couponCode: coupon || undefined,
+        couponCode: appliedCoupon?.code || undefined,
       };
 
       const response = await orderAPI.createOrder(orderData);
@@ -230,6 +271,15 @@ const Checkout = () => {
               <span>${subtotal.toFixed(2)}</span>
             </div>
             <hr className="co-divider" />
+            {discountAmount > 0 && (
+              <>
+                <div className="co-total-row" style={{ color: "#2ecc71" }}>
+                  <span>Discount:</span>
+                  <span>-${discountAmount.toFixed(2)}</span>
+                </div>
+                <hr className="co-divider" />
+              </>
+            )}
             <div className="co-total-row">
               <span>Shipping:</span>
               <span>{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
@@ -287,15 +337,62 @@ const Checkout = () => {
           </div>
 
           {/* Coupon + Place Order */}
-          <div className="co-coupon-row">
-            <input
-              className="co-coupon-input"
-              type="text"
-              placeholder="Coupon Code"
-              value={coupon}
-              onChange={(e) => setCoupon(e.target.value)}
-            />
-            <button className="btn-apply">Apply Coupon</button>
+          <div className="co-coupon-section">
+            {appliedCoupon ? (
+              <div style={{ marginBottom: "15px", padding: "10px", backgroundColor: "#f0fff4", border: "1px solid #2ecc71", borderRadius: "4px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ color: "#2ecc71", fontWeight: "bold" }}>
+                    ✓ Coupon Applied: {appliedCoupon.code}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCoupon}
+                    style={{
+                      backgroundColor: "transparent",
+                      border: "none",
+                      color: "#db4444",
+                      cursor: "pointer",
+                      fontSize: "16px"
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="co-coupon-row">
+                  <input
+                    className="co-coupon-input"
+                    type="text"
+                    placeholder="Coupon Code"
+                    value={coupon}
+                    onChange={(e) => {
+                      setCoupon(e.target.value);
+                      setCouponError("");
+                      setCouponSuccess("");
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="btn-apply"
+                    onClick={handleApplyCoupon}
+                  >
+                    Apply Coupon
+                  </button>
+                </div>
+                {couponError && (
+                  <div style={{ color: "#db4444", fontSize: "12px", marginTop: "5px" }}>
+                    {couponError}
+                  </div>
+                )}
+                {couponSuccess && (
+                  <div style={{ color: "#2ecc71", fontSize: "12px", marginTop: "5px" }}>
+                    {couponSuccess}
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           <button className="btn-place-order" onClick={handlePlaceOrder} disabled={placingOrder}>

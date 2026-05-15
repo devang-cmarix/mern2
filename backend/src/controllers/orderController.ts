@@ -21,8 +21,8 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
     productId: item.productId._id,
     productName: item.productId.name,
     quantity: item.quantity,
-    price: item.productId.price,
-    subtotal: item.productId.price * item.quantity,
+    price: item.productId.discountPrice || item.productId.price,
+    subtotal: (item.productId.discountPrice || item.productId.price) * item.quantity,
   }));
 
   let subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
@@ -49,8 +49,8 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
   }
 
   const shipping = subtotal > 50 ? 0 : 5.99;
-  const tax = subtotal * 0.08;
-  const total = subtotal + shipping + tax - discount;
+  const tax = subtotal * 0.08; // Tax on product-discounted subtotal, before coupon
+  const total = subtotal - discount + shipping + tax;
 
   const order = await Order.create({
     orderId: generateOrderId(),

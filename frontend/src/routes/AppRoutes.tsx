@@ -25,6 +25,7 @@ import AdminUsers from "../pages/AdminUsers";
 import AdminOrders from "../pages/AdminOrders";
 import AdminReviews from "../pages/AdminReviews";
 import AdminSettings from "../pages/AdminSettings";
+import AdminCoupons from "../pages/AdminCoupons";
 
 // Main layout wrapper
 const MainLayoutWrapper = () => (
@@ -91,6 +92,7 @@ const AppRoutes = () => {
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/admin/reviews" element={<AdminReviews />} />
+          <Route path="/admin/coupons" element={<AdminCoupons />} />
           <Route path="/admin/settings" element={<AdminSettings />} />
         </Route>
       </Routes>
